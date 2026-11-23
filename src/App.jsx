@@ -1,112 +1,75 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authView, setAuthView] = useState("login");
 
-  useEffect(() => {
-    // Cerere
-    axios
-      .get("http://localhost:5000/api/users")
-      .then((response) => {
-        setUsers(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Eroare la preluarea utilizatorilor:", err);
-        setError("Nu s-a putut face conexiunea cu backend-ul.");
-        setLoading(false);
-      });
-  }, []);
+  if (!currentUser) {
+    if (authView === "register") {
+      return (
+        <RegisterPage
+          onRegisterSuccess={(user) => setCurrentUser(user)}
+          onSwitchToLogin={() => setAuthView("login")}
+        />
+      );
+    }
+
+    return (
+      <LoginPage
+        onLoginSuccess={(user) => setCurrentUser(user)}
+        onSwitchToRegister={() => setAuthView("register")}
+      />
+    );
+  }
 
   return (
     <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        padding: "40px",
-        maxWidth: "800px",
-        margin: "0 auto",
-      }}
+      style={{ padding: "40px", fontFamily: "sans-serif", textAlign: "center" }}
     >
-      <header
+      <span
         style={{
-          borderBottom: "2px solid #2563eb",
-          paddingBottom: "10px",
-          marginBottom: "20px",
+          padding: "6px 14px",
+          borderRadius: "20px",
+          backgroundColor: currentUser.rol === "Admin" ? "#fef3c7" : "#dbeafe",
+          color: currentUser.rol === "Admin" ? "#b45309" : "#1e3a8a",
+          fontWeight: "bold",
+          fontSize: "13px",
         }}
       >
-        <h1 style={{ color: "#2563eb", margin: 0 }}>Campus Sports Booking</h1>
-        <p style={{ color: "#4b5563" }}>
-          MVP - Listă Utilizatori (Integrare Frontend & Backend)
+        Rol: {currentUser.rol}
+      </span>
+
+      <h2 style={{ marginTop: "16px" }}>Bun venit, {currentUser.nume}!</h2>
+      <p style={{ color: "#64748b" }}>{currentUser.email}</p>
+
+      {currentUser.rol === "Admin" ? (
+        <p style={{ color: "#0f172a", fontWeight: "500" }}>
+          Aici va fi Panoul de Admin (toate rezervările, mentenanță facilități,
+          statistici).
         </p>
-      </header>
-
-      {loading && <p>Se încarcă datele de la server...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {!loading && !error && (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-          }}
-        >
-          <thead>
-            <tr
-              style={{
-                backgroundColor: "#2563eb",
-                color: "white",
-                textAlign: "left",
-              }}
-            >
-              <th style={{ padding: "12px" }}>ID</th>
-              <th style={{ padding: "12px" }}>Nume</th>
-              <th style={{ padding: "12px" }}>Email</th>
-              <th style={{ padding: "12px" }}>Rol</th>
-              <th style={{ padding: "12px", textAlign: "center" }}>
-                Rezervări Săpt.
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr
-                key={user.userId}
-                style={{ borderBottom: "1px solid #e5e7eb" }}
-              >
-                <td style={{ padding: "12px" }}>{user.userId}</td>
-                <td style={{ padding: "12px", fontWeight: "500" }}>
-                  {user.nume}
-                </td>
-                <td style={{ padding: "12px", color: "#4b5563" }}>
-                  {user.email}
-                </td>
-                <td style={{ padding: "12px" }}>
-                  <span
-                    style={{
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      backgroundColor:
-                        user.rol === "Profesor" ? "#f3f4f6" : "#dbeafe",
-                      color: user.rol === "Profesor" ? "#374151" : "#1d4ed8",
-                      fontSize: "0.85rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {user.rol}
-                  </span>
-                </td>
-                <td style={{ padding: "12px", textAlign: "center" }}>
-                  {user.rezervariSaptamana}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      ) : (
+        <p style={{ color: "#0f172a", fontWeight: "500" }}>
+          Aici va fi Catalogul de Facilități și Calendarul tău de rezervări.
+        </p>
       )}
+
+      <button
+        onClick={() => setCurrentUser(null)}
+        style={{
+          marginTop: "20px",
+          padding: "12px 24px",
+          backgroundColor: "#1e3a8a",
+          color: "white",
+          border: "none",
+          borderRadius: "10px",
+          cursor: "pointer",
+          fontWeight: "bold",
+        }}
+      >
+        Deconectare
+      </button>
     </div>
   );
 }

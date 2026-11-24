@@ -1,0 +1,280 @@
+.user-home-wrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+}
+
+.user-home-container {
+  width: 100%;
+  max-width: 480px;
+  background-color: #f8fafc;
+  padding: 24px 20px 100px 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Header: Dată + Salut + Vreme */
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.home-date {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 4px 0;
+  text-transform: capitalize;
+}
+
+.home-greeting {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.home-weather {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.weather-temp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.weather-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Card Următoarea rezervare */
+.next-booking-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  border-radius: 20px;
+  padding: 20px;
+  color: #ffffff;
+  margin-bottom: 28px;
+  box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.next-booking-card:hover {
+  transform: translateY(-2px);
+}
+
+.next-booking-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #bfdbfe;
+  margin-bottom: 16px;
+}
+
+.next-booking-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.next-booking-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.next-booking-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.next-booking-time {
+  font-size: 13px;
+  color: #dbeafe;
+  margin: 0;
+}
+
+.next-booking-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #bfdbfe;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Secțiunea Alege-ți mișcarea */
+.facilities-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.facilities-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.facilities-count {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.facility-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.facility-card.available {
+  cursor: pointer;
+}
+
+.facility-card.available:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.facility-card.maintenance {
+  opacity: 0.78;
+  cursor: not-allowed;
+}
+
+.facility-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background-color: #16a34a;
+}
+
+.status-dot.orange {
+  background-color: #b45309;
+}
+
+.facility-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.status-badge.open {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.maint {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.facility-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e3a8a;
+  padding-top: 8px;
+}
+
+.facility-action.disabled {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Bara de navigare de jos (Bottom Navigation) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 14px 0;
+  z-index: 50;
+}
+
+.bottom-nav-item {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 16px;
+}
+
+.bottom-nav-item:hover {
+  border-color: transparent;
+  color: #1e3a8a;
+}
+
+.bottom-nav-item.active {
+  color: #1e3a8a;
+  font-weight: 700;
+}

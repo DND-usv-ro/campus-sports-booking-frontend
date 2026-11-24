@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './UserHomePage.css';
+import UserBookingPage from '../UserBookingPage/UserBookingPage';
 
 // Iconițe SVG curate conform machetei
 const SunIcon = () => (
@@ -229,37 +230,32 @@ function UserHomePage({ currentUser, onLogout }) {
           </>
         )}
 
-        {/* Tab Rezervă (pregătit pentru colegii care fac fluxul de rezervare) */}
-        {activeTab === 'rezerva' && (
-          <div style={{ paddingTop: '20px' }}>
-            <h2 style={{ margin: '0 0 8px 0' }}>
-              {selectedFacility ? `Rezervare: ${selectedFacility.nume}` : 'Rezervă o facilitate'}
-            </h2>
-            <p style={{ color: '#64748b', fontSize: '14px' }}>
-              {selectedFacility
-                ? `Locație: ${selectedFacility.locatie}`
-                : 'Selectează o facilitate din pagina Acasă.'}
-            </p>
-            <button
-              onClick={() => {
-                setSelectedFacility(null);
-                setActiveTab('acasa');
-              }}
-              style={{
-                marginTop: '16px',
-                padding: '10px 18px',
-                backgroundColor: '#1e3a8a',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '10px',
-                fontWeight: '600',
-              }}
-            >
-              ← Înapoi la Acasă
-            </button>
-          </div>
-        )}
-
+       {/* Tab Rezervă (componentă separată din folderul UserBookingPage) */}
+     {activeTab === 'rezerva' && (
+       <UserBookingPage
+         currentUser={currentUser}
+         initialFacility={selectedFacility}
+         onBack={() => {
+           setSelectedFacility(null);
+           setActiveTab('acasa');
+         }}
+         onBookingSuccess={async () => {
+           try {
+             const res = await axios.get('http://localhost:5000/api/bookings');
+             const userActiveBookings = res.data.filter(
+               (b) => b.userId === currentUser.userId && b.status === 'Activa'
+             );
+             if (userActiveBookings.length > 0) {
+               setNextBooking(userActiveBookings[userActiveBookings.length - 1]);
+             }
+           } catch (err) {
+             console.error(err);
+           }
+           setSelectedFacility(null);
+           setActiveTab('acasa');
+         }}
+       />
+     )}
         {/* Tab Profil (conține datele utilizatorului și butonul de Deconectare) */}
         {activeTab === 'profil' && (
           <div style={{ paddingTop: '20px' }}>

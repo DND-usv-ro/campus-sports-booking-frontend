@@ -10,6 +10,12 @@ function AdminDashboardPage() {
 
   const facilitiesList = ['Toate', 'Bazin', 'Fitness', 'Fotbal', 'Baschet'];
 
+  const formattedDate = new Date().toLocaleDateString('ro-RO', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
   const fetchBookings = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/bookings');
@@ -52,30 +58,33 @@ function AdminDashboardPage() {
       .slice(0, 2);
   };
 
-  // Filtrare rezer
   const filteredBookings =
     selectedFilter === 'Toate'
       ? bookings
       : bookings.filter((b) => b.numeFacilitate === selectedFilter);
 
-  // Calcul statistici 
   const activeBookingsCount = bookings.filter((b) => b.status === 'Activa').length;
   const totalFacilities = 4;
   const occupancyRate = Math.min(100, Math.round((activeBookingsCount / 16) * 100));
 
   return (
-    <div className="admin-container">
-      <div className="admin-page-header">
+    <main className="admin-main-content">
+      <header className="admin-page-header">
+        <p className="admin-page-date">{formattedDate}</p>
         <h1 className="admin-page-title">Panou administrare</h1>
-        <p className="admin-page-subtitle">
-          Monitorizează rezervările din campus și gestionează disponibilitatea terenurilor
-        </p>
-      </div>
+      </header>
 
-      
+      {/* 3 Carduri de statistici cu iconițe SVG curate */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📅</div>
+          <div className="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+          </div>
           <div>
             <p className="stat-label">Rezervări active</p>
             <p className="stat-value">{activeBookingsCount}</p>
@@ -83,7 +92,14 @@ function AdminDashboardPage() {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🏟️</div>
+          <div className="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </div>
           <div>
             <p className="stat-label">Facilități</p>
             <p className="stat-value">{totalFacilities}</p>
@@ -91,7 +107,13 @@ function AdminDashboardPage() {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📊</div>
+          <div className="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
           <div>
             <p className="stat-label">Ocupare</p>
             <p className="stat-value">{occupancyRate}%</p>
@@ -121,7 +143,7 @@ function AdminDashboardPage() {
       </div>
 
       {loading && <p>Se încarcă rezervările...</p>}
-      {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
+      {error && <p style={{ color: '#dc2626' }}>{error}</p>}
 
       {!loading && !error && (
         <div className="bookings-list">
@@ -173,7 +195,7 @@ function AdminDashboardPage() {
           )}
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

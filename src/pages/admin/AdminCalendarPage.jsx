@@ -3,16 +3,16 @@ import './Admin.css';
 
 function AdminCalendarPage() {
   return (
-    <div className="admin-container">
-      <div className="admin-page-header">
+    <main className="admin-main-content">
+      <header className="admin-page-header">
+        <p className="admin-page-date">Vizualizare program</p>
         <h1 className="admin-page-title">Calendar rezervări</h1>
-        
-      </div>
+      </header>
 
       <div className="placeholder-box">
-        <h3>📅 Secțiune în curs de implementare</h3>
+        <h3>Secțiune în curs de implementare</h3>
       </div>
-    </div>
+    </main>
   );
 }
 

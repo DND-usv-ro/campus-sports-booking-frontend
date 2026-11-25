@@ -13,12 +13,14 @@ const TIME_SLOTS = [
   { start: '08:00', full: '08:00 - 09:00' },
   { start: '09:30', full: '09:30 - 10:30' },
   { start: '11:00', full: '11:00 - 12:00' },
+  { start: '12:00', full: '12:00 - 13:00' },
   { start: '14:00', full: '14:00 - 15:00' },
   { start: '15:30', full: '15:30 - 16:30' },
+  { start: '16:00', full: '16:00 - 17:00' },
   { start: '17:00', full: '17:00 - 18:00' },
 ];
 
-const SportIcon = ({ type, color = '#1e3a8a', size = 22 }) => {
+const SportIcon = ({ type, color = '#1e3a8a', size = 20 }) => {
   if (type === 'Bazin') {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -58,7 +60,6 @@ const SportIcon = ({ type, color = '#1e3a8a', size = 22 }) => {
   );
 };
 
-// Generează cele 5 zile lucrătoare (Lun - Vin) pentru săptămâna curentă + offset
 const getWeekdaysForOffset = (weekOffset) => {
   const today = new Date();
   const day = today.getDay();
@@ -83,7 +84,7 @@ const getWeekdaysForOffset = (weekOffset) => {
   return days;
 };
 
-function UserBookingPage({ currentUser, initialFacility, onBack, onBookingSuccess }) {
+function UserBookingPage({ currentUser, initialFacility, onBookingSuccess }) {
   const [facility, setFacility] = useState(initialFacility || FACILITIES[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -120,7 +121,6 @@ function UserBookingPage({ currentUser, initialFacility, onBack, onBookingSucces
     fetchBookings();
   }, []);
 
-  // Verifică dacă un interval este ocupat pentru facilitatea și ziua selectată
   const isSlotOccupied = (fullInterval) => {
     return allBookings.some(
       (b) =>
@@ -131,7 +131,6 @@ function UserBookingPage({ currentUser, initialFacility, onBack, onBookingSucces
     );
   };
 
-  // Calculează câte rezervări active are utilizatorul în săptămâna afișată
   const weekStart = weekDays[0]?.iso;
   const weekEnd = weekDays[4]?.iso;
   const userWeeklyCount = allBookings.filter(
@@ -142,19 +141,18 @@ function UserBookingPage({ currentUser, initialFacility, onBack, onBookingSucces
       b.data <= weekEnd
   ).length;
 
-  // Titlul lunii (ex. "Noiembrie 2026")
   const monthLabel = weekDays[2]?.dateObj.toLocaleDateString('ro-RO', {
     month: 'long',
     year: 'numeric',
   });
 
-  // Textul de rezumat deasupra butonului (ex. "Mie, 25 nov. • 17:00 - 18:00")
   const selectedDayObj = weekDays.find((d) => d.iso === selectedDate);
-  const summaryDateText = selectedDayObj
+  const detailDateText = selectedDayObj
     ? selectedDayObj.dateObj.toLocaleDateString('ro-RO', {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
+        year: 'numeric',
       })
     : '';
 
@@ -193,190 +191,226 @@ function UserBookingPage({ currentUser, initialFacility, onBack, onBookingSucces
   };
 
   return (
-    <div className="booking-page">
-      {/* Header cu buton Înapoi */}
-      <header className="booking-header">
-        <button className="booking-back-btn" onClick={onBack} title="Înapoi la Acasă">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="booking-header-title">Rezervare</h1>
+    <div>
+      {/* Header pagină */}
+      <header className="booking-desktop-header">
+        <h1 className="booking-desktop-title">Calendar de rezervare</h1>
+        <p className="booking-desktop-subtitle">Alege data și intervalul dorit</p>
       </header>
 
-      {/* Dropdown alegere facilitate */}
-      <div className="facility-selector-wrapper">
-        <div
-          className="facility-selector-card"
-          onClick={() => setDropdownOpen((prev) => !prev)}
-        >
-          <div className="facility-selector-left">
-            <div className="facility-selector-icon">
-              <SportIcon type={facility.nume} color="#1e3a8a" size={24} />
+      {/* Layout 2 coloane */}
+      <div className="booking-two-col-grid">
+        {/* Coloana stângă */}
+        <div className="booking-left-card">
+          <span className="field-label-small">Facilitate</span>
+
+          <div className="facility-selector-wrapper">
+            <div
+              className="facility-selector-card"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+            >
+              <div className="facility-selector-left">
+                <div className="facility-selector-icon">
+                  <SportIcon type={facility.nume} color="#1e3a8a" size={20} />
+                </div>
+                <div>
+                  <h2 className="facility-selector-name">{facility.nume}</h2>
+                  <p className="facility-selector-loc">{facility.locatie}</p>
+                </div>
+              </div>
+
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </div>
-            <div>
-              <h2 className="facility-selector-name">{facility.nume}</h2>
-              <p className="facility-selector-loc">{facility.locatie}</p>
+
+            {dropdownOpen && (
+              <div className="facility-dropdown-menu">
+                {FACILITIES.map((fac) => {
+                  const isOpen = fac.status === 'Deschis';
+                  return (
+                    <div
+                      key={fac.id}
+                      className={`facility-dropdown-item ${!isOpen ? 'disabled' : ''}`}
+                      onClick={() => {
+                        if (isOpen) {
+                          setFacility(fac);
+                          setSelectedSlot(null);
+                          setFeedback(null);
+                          setDropdownOpen(false);
+                        }
+                      }}
+                    >
+                      <div className="facility-selector-left">
+                        <SportIcon type={fac.nume} color={isOpen ? '#1e3a8a' : '#94a3b8'} size={18} />
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: '14px', color: '#0f172a' }}>
+                            {fac.nume} {!isOpen && '(Mentenanță)'}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>{fac.locatie}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Navigare lună și zile */}
+          <div className="calendar-nav-row">
+            <h2 className="calendar-month-label">{monthLabel}</h2>
+            <div className="calendar-arrows">
+              <button
+                className="calendar-arrow-btn"
+                onClick={() => setWeekOffset((w) => w - 1)}
+                title="Săptămâna anterioară"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button
+                className="calendar-arrow-btn"
+                onClick={() => setWeekOffset((w) => w + 1)}
+                title="Săptămâna următoare"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
             </div>
           </div>
 
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-
-        {dropdownOpen && (
-          <div className="facility-dropdown-menu">
-            {FACILITIES.map((fac) => {
-              const isOpen = fac.status === 'Deschis';
+          <div className="days-strip">
+            {weekDays.map((day) => {
+              const isSelected = day.iso === selectedDate;
               return (
-                <div
-                  key={fac.id}
-                  className={`facility-dropdown-item ${!isOpen ? 'disabled' : ''}`}
+                <button
+                  key={day.iso}
+                  className={`day-pill ${isSelected ? 'selected' : ''}`}
                   onClick={() => {
-                    if (isOpen) {
-                      setFacility(fac);
-                      setSelectedSlot(null);
-                      setFeedback(null);
-                      setDropdownOpen(false);
-                    }
+                    setSelectedDate(day.iso);
+                    setSelectedSlot(null);
+                    setFeedback(null);
                   }}
                 >
-                  <div className="facility-selector-left">
-                    <SportIcon type={fac.nume} color={isOpen ? '#1e3a8a' : '#94a3b8'} size={20} />
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '14px', color: '#0f172a' }}>
-                        {fac.nume} {!isOpen && '(Mentenanță)'}
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>{fac.locatie}</div>
-                    </div>
-                  </div>
-                </div>
+                  <span className="day-pill-name">{day.dayShort}</span>
+                  <span className="day-pill-num">{day.dayNum}</span>
+                </button>
               );
             })}
           </div>
-        )}
-      </div>
 
-      {/* Navigare săptămână & zile */}
-      <div className="calendar-nav-row">
-        <h2 className="calendar-month-label">{monthLabel}</h2>
-        <div className="calendar-arrows">
-          <button
-            className="calendar-arrow-btn"
-            onClick={() => setWeekOffset((w) => w - 1)}
-            title="Săptămâna anterioară"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
+          {/* Grid 8 intervale orare */}
+          <div className="slots-grid-desktop">
+            {TIME_SLOTS.map((slot) => {
+              const occupied = isSlotOccupied(slot.full);
+              const isSelected = selectedSlot?.full === slot.full;
+
+              return (
+                <button
+                  key={slot.full}
+                  disabled={occupied}
+                  className={`slot-card ${occupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`}
+                  onClick={() => {
+                    if (!occupied) {
+                      setSelectedSlot(slot);
+                      setFeedback(null);
+                    }
+                  }}
+                >
+                  <span className="slot-time-row">{slot.start}</span>
+                  <span className="slot-status">
+                    {occupied ? 'Ocupat' : isSelected ? 'Selectat' : 'Disponibil'}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Banner limită */}
+          <div className="limit-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-          </button>
-          <button
-            className="calendar-arrow-btn"
-            onClick={() => setWeekOffset((w) => w + 1)}
-            title="Săptămâna următoare"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
+            <span>
+              Maxim 3 rezervări pe săptămână ({userWeeklyCount}/3 utilizate)
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div className="days-strip">
-        {weekDays.map((day) => {
-          const isSelected = day.iso === selectedDate;
-          return (
-            <button
-              key={day.iso}
-              className={`day-pill ${isSelected ? 'selected' : ''}`}
-              onClick={() => {
-                setSelectedDate(day.iso);
-                setSelectedSlot(null);
-                setFeedback(null);
-              }}
-            >
-              <span className="day-pill-name">{day.dayShort}</span>
-              <span className="day-pill-num">{day.dayNum}</span>
-            </button>
-          );
-        })}
-      </div>
+        {/* Coloana dreaptă: Detalii rezervare */}
+        <aside className="booking-right-card">
+          <h3 className="details-card-title">Detalii rezervare</h3>
 
-      {/* Alegere interval orar */}
-      <div className="slots-header">
-        <h3 className="slots-title">Alege intervalul</h3>
-        <span className="slots-duration">Durată: 60 min</span>
-      </div>
+          <div className="detail-row">
+            <div className="detail-icon-box">
+              <SportIcon type={facility.nume} color="#1e3a8a" size={18} />
+            </div>
+            <div>
+              <span className="detail-label">Facilitate</span>
+              <span className="detail-value">{facility.nume}</span>
+            </div>
+          </div>
 
-      <div className="slots-grid">
-        {TIME_SLOTS.map((slot) => {
-          const occupied = isSlotOccupied(slot.full);
-          const isSelected = selectedSlot?.full === slot.full;
+          <div className="detail-row">
+            <div className="detail-icon-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <div>
+              <span className="detail-label">Dată</span>
+              <span className="detail-value">{detailDateText}</span>
+            </div>
+          </div>
 
-          return (
-            <button
-              key={slot.full}
-              disabled={occupied}
-              className={`slot-card ${occupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`}
-              onClick={() => {
-                if (!occupied) {
-                  setSelectedSlot(slot);
-                  setFeedback(null);
-                }
-              }}
-            >
-              <div className="slot-time-row">
-                <span>{slot.start}</span>
-                {isSelected && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                )}
-              </div>
-              <span className="slot-status">
-                {occupied ? 'Ocupat' : isSelected ? 'Selectat' : 'Disponibil'}
+          <div className="detail-row">
+            <div className="detail-icon-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div>
+              <span className="detail-label">Interval</span>
+              <span className="detail-value">
+                {selectedSlot ? selectedSlot.full : 'Neselectat'}
               </span>
-            </button>
-          );
-        })}
+            </div>
+          </div>
+
+          {feedback && (
+            <div className={`booking-feedback ${feedback.type}`}>
+              {feedback.text}
+            </div>
+          )}
+
+          <button
+            className="confirm-booking-btn"
+            disabled={!selectedSlot || loading || userWeeklyCount >= 3}
+            onClick={handleConfirmBooking}
+          >
+            {loading ? 'Se salvează...' : 'Confirmă rezervarea'}
+          </button>
+
+          <div className="details-footer-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            <span>Se va crea o rezervare în numele tău</span>
+          </div>
+        </aside>
       </div>
-
-      {/* Banner limită 3 rezervări / săptămână */}
-      <div className="limit-banner">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </svg>
-        <span>
-          Maxim 3 rezervări pe săptămână ({userWeeklyCount}/3 utilizate)
-        </span>
-      </div>
-
-      {/* Mesaj confirmare sau eroare */}
-      {feedback && (
-        <div className={`booking-feedback ${feedback.type}`}>
-          {feedback.text}
-        </div>
-      )}
-
-      {/* Rezumat și buton Confirmă rezervarea */}
-      <p className="booking-summary-text">
-        {selectedSlot
-          ? `${summaryDateText} • ${selectedSlot.full}`
-          : 'Selectează un interval disponibil'}
-      </p>
-
-      <button
-        className="confirm-booking-btn"
-        disabled={!selectedSlot || loading || userWeeklyCount >= 3}
-        onClick={handleConfirmBooking}
-      >
-        {loading ? 'Se salvează...' : 'Confirmă rezervarea'}
-      </button>
     </div>
   );
 }

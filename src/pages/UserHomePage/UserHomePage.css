@@ -1,95 +1,193 @@
-.user-home-wrapper {
+.desktop-app-layout {
+  display: flex;
   min-height: 100vh;
   background-color: #f8fafc;
-  display: flex;
-  justify-content: center;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #0f172a;
 }
 
-.user-home-container {
-  width: 100%;
-  max-width: 480px;
-  background-color: #f8fafc;
-  padding: 24px 20px 100px 20px;
-  box-sizing: border-box;
-  position: relative;
+/* Sidebar stânga */
+.desktop-sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
 }
 
-/* Header: Dată + Salut + Vreme */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 24px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.sidebar-logo-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #1e3a8a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e3a8a;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.sidebar-brand-sub {
+  margin: 2px 0 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.sidebar-nav-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-nav-btn.active {
+  background-color: #eff6ff;
+  color: #1e3a8a;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #fee2e2;
+  background-color: #fff5f5;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background-color: #fee2e2;
+}
+
+/* Zona principală de conținut pe tot restul ecranului */
+.desktop-main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 36px 48px;
+  max-width: 1300px;
+}
+
+/* Header Home Page */
 .home-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
+  align-items: center;
+  margin-bottom: 28px;
 }
 
 .home-date {
-  font-size: 13px;
-  color: #94a3b8;
+  font-size: 14px;
+  color: #64748b;
   margin: 0 0 4px 0;
   text-transform: capitalize;
 }
 
 .home-greeting {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 700;
-  color: #0f172a;
   margin: 0;
+  color: #0f172a;
 }
 
 .home-weather {
-  text-align: right;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 16px;
 }
 
 .weather-temp {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e3a8a;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .weather-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 2px;
+  font-size: 13px;
+  color: #64748b;
 }
 
-/* Card Următoarea rezervare */
+/* Card Următoarea rezervare (orizontal, lat ca în machetă) */
 .next-booking-card {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
   border-radius: 20px;
-  padding: 20px;
+  padding: 24px 28px;
   color: #ffffff;
-  margin-bottom: 28px;
-  box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+  margin-bottom: 36px;
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.18);
   cursor: pointer;
   transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .next-booking-card:hover {
   transform: translateY(-2px);
 }
 
-.next-booking-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  color: #bfdbfe;
-  margin-bottom: 16px;
-}
-
-.next-booking-main {
+.next-booking-left {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 20px;
 }
 
 .next-booking-icon-box {
@@ -100,7 +198,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+}
+
+.next-booking-eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #bfdbfe;
+  margin: 0 0 4px 0;
+  font-weight: 600;
 }
 
 .next-booking-title {
@@ -109,8 +215,11 @@
   margin: 0 0 4px 0;
 }
 
-.next-booking-time {
-  font-size: 13px;
+.next-booking-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
   color: #dbeafe;
   margin: 0;
 }
@@ -119,48 +228,56 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: #bfdbfe;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* Secțiunea Alege-ți mișcarea */
+.next-booking-arrow-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Secțiunea Alege-ți mișcarea - 4 carduri pe un rând */
 .facilities-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 16px;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 .facilities-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
   margin: 0;
+  color: #0f172a;
 }
 
 .facilities-count {
-  font-size: 13px;
-  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+  cursor: pointer;
 }
 
 .facilities-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .facility-card {
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 18px 16px;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 200px;
+  transition: all 0.2s ease;
 }
 
 .facility-card.available {
@@ -168,25 +285,40 @@
 }
 
 .facility-card.available:hover {
+  border-color: #1e3a8a;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .facility-card.maintenance {
+  background-color: #f8fafc;
   opacity: 0.78;
-  cursor: not-allowed;
 }
 
 .facility-card-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 18px;
 }
 
+.facility-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.facility-card.maintenance .facility-icon-circle {
+  background-color: #e2e8f0;
+}
+
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
 }
 
@@ -195,86 +327,63 @@
 }
 
 .status-dot.orange {
-  background-color: #b45309;
+  background-color: #ea580c;
 }
 
 .facility-name {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
   color: #0f172a;
-  margin: 0 0 8px 0;
 }
 
 .status-badge {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   padding: 4px 10px;
-  border-radius: 8px;
-  margin-bottom: 18px;
+  border-radius: 12px;
 }
 
 .status-badge.open {
   background-color: #dcfce7;
-  color: #15803d;
+  color: #16a34a;
 }
 
 .status-badge.maint {
-  background-color: #fef3c7;
-  color: #b45309;
+  background-color: #ffedd5;
+  color: #ea580c;
 }
 
 .facility-action {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  justify-content: space-between;
+  font-size: 14px;
   font-weight: 600;
   color: #1e3a8a;
-  padding-top: 8px;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
 }
 
 .facility-action.disabled {
   color: #94a3b8;
   font-weight: 500;
+  font-size: 13px;
 }
 
-/* Bara de navigare de jos (Bottom Navigation) */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
+/* Pagina de profil desktop */
+.profile-card-desktop {
   background-color: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0 14px 0;
-  z-index: 50;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 520px;
 }
 
-.bottom-nav-item {
-  background: none;
-  border: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 4px 16px;
-}
-
-.bottom-nav-item:hover {
-  border-color: transparent;
-  color: #1e3a8a;
-}
-
-.bottom-nav-item.active {
-  color: #1e3a8a;
-  font-weight: 700;
+@media (max-width: 1024px) {
+  .facilities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

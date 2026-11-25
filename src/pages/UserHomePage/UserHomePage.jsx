@@ -3,17 +3,23 @@ import axios from 'axios';
 import './UserHomePage.css';
 import UserBookingPage from '../UserBookingPage/UserBookingPage';
 
-// Iconițe SVG curate conform machetei
 const SunIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="4" />
     <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
   </svg>
 );
 
-const ArrowUpRight = ({ color = 'currentColor' }) => (
+const ArrowRight = ({ color = 'currentColor' }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M7 17L17 7M7 7h10v10" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
+const ChevronRight = ({ color = 'currentColor' }) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
@@ -24,7 +30,7 @@ const PinIcon = () => (
   </svg>
 );
 
-const SportIcon = ({ type, color = '#1e3a8a', size = 26 }) => {
+const SportIcon = ({ type, color = '#1e3a8a', size = 24 }) => {
   if (type === 'Bazin') {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -76,31 +82,31 @@ function UserHomePage({ currentUser, onLogout }) {
   const [nextBooking, setNextBooking] = useState(null);
   const [selectedFacility, setSelectedFacility] = useState(null);
 
-  // Extragem prenumele (ex. "Ana" din "Ana Popescu")
   const firstName = currentUser?.nume ? currentUser.nume.split(' ')[0] : 'Utilizator';
 
-  // Formatăm data curentă în română (ex. "Miercuri, 25 noiembrie")
   const formattedDate = new Date().toLocaleDateString('ro-RO', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   });
 
-  useEffect(() => {
-    const fetchUserBookings = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/bookings');
-        const userActiveBookings = res.data.filter(
-          (b) => b.userId === currentUser.userId && b.status === 'Activa'
-        );
-        if (userActiveBookings.length > 0) {
-          setNextBooking(userActiveBookings[0]);
-        }
-      } catch (err) {
-        console.error('Eroare la încărcarea rezervărilor:', err);
+  const fetchUserBookings = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/bookings');
+      const userActiveBookings = res.data.filter(
+        (b) => b.userId === currentUser.userId && b.status === 'Activa'
+      );
+      if (userActiveBookings.length > 0) {
+        setNextBooking(userActiveBookings[userActiveBookings.length - 1]);
+      } else {
+        setNextBooking(null);
       }
-    };
+    } catch (err) {
+      console.error('Eroare la încărcarea rezervărilor:', err);
+    }
+  };
 
+  useEffect(() => {
     if (currentUser?.userId) {
       fetchUserBookings();
     }
@@ -108,7 +114,7 @@ function UserHomePage({ currentUser, onLogout }) {
 
   const formatBookingDate = (dateStr) => {
     if (!dateStr) return '';
-    const dateObj = new Date(dateStr);
+    const dateObj = new Date(dateStr + 'T00:00:00');
     return dateObj.toLocaleDateString('ro-RO', {
       weekday: 'short',
       day: 'numeric',
@@ -117,16 +123,82 @@ function UserHomePage({ currentUser, onLogout }) {
   };
 
   return (
-    <div className="user-home-wrapper">
-      <div className="user-home-container">
+    <div className="desktop-app-layout">
+      {/* Sidebar stânga */}
+      <aside className="desktop-sidebar">
+        <div>
+          <div className="sidebar-brand">
+            <div className="sidebar-logo-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18" />
+                <path d="M5 21V7l7-4 7 4v14" />
+                <path d="M9 21v-6h6v6" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="sidebar-brand-title">CAMPUS UNIVERSITAR</h2>
+              <p className="sidebar-brand-sub">Rezervări sportive</p>
+            </div>
+          </div>
+
+          <nav className="sidebar-nav">
+            <button
+              className={`sidebar-nav-btn ${activeTab === 'acasa' ? 'active' : ''}`}
+              onClick={() => setActiveTab('acasa')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span>Acasă</span>
+            </button>
+
+            <button
+              className={`sidebar-nav-btn ${activeTab === 'rezerva' ? 'active' : ''}`}
+              onClick={() => setActiveTab('rezerva')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <span>Rezervă</span>
+            </button>
+
+            <button
+              className={`sidebar-nav-btn ${activeTab === 'profil' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profil')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span>Profil</span>
+            </button>
+          </nav>
+        </div>
+
+        <button className="sidebar-logout-btn" onClick={onLogout}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span>Ieșire</span>
+        </button>
+      </aside>
+
+      {/* Conținut principal pe restul ecranului */}
+      <main className="desktop-main-content">
         {activeTab === 'acasa' && (
           <>
-            {/* Secțiunea de sus: Dată, Salut, Vreme */}
             <header className="home-header">
               <div>
                 <p className="home-date">{formattedDate}</p>
-                <h1 className="home-greeting">Bun venit, {firstName}</h1>
+                <h1 className="home-greeting">Bun venit, {firstName}!</h1>
               </div>
+
               <div className="home-weather">
                 <div className="weather-temp">
                   <SunIcon />
@@ -140,50 +212,54 @@ function UserHomePage({ currentUser, onLogout }) {
             <section
               className="next-booking-card"
               onClick={() => setActiveTab('rezerva')}
-              title="Vezi detaliile rezervării"
+              title="Mergi la calendarul de rezervare"
             >
-              <div className="next-booking-top">
-                <span>Următoarea rezervare</span>
-                <ArrowUpRight color="#ffffff" />
-              </div>
-
               {nextBooking ? (
-                <>
-                  <div className="next-booking-main">
-                    <div className="next-booking-icon-box">
-                      <SportIcon type={nextBooking.numeFacilitate} color="#ffffff" size={28} />
-                    </div>
-                    <div>
-                      <h2 className="next-booking-title">{nextBooking.numeFacilitate}</h2>
-                      <p className="next-booking-time">
-                        {formatBookingDate(nextBooking.data)} • {nextBooking.intervalOrar}
-                      </p>
-                    </div>
+                <div className="next-booking-left">
+                  <div className="next-booking-icon-box">
+                    <SportIcon type={nextBooking.numeFacilitate} color="#ffffff" size={28} />
                   </div>
-                  <div className="next-booking-location">
-                    <PinIcon />
-                    <span>{nextBooking.locatie}</span>
-                  </div>
-                </>
-              ) : (
-                <div className="next-booking-main" style={{ marginBottom: 0 }}>
                   <div>
-                    <h2 className="next-booking-title" style={{ fontSize: '18px' }}>
-                      Nicio rezervare activă
-                    </h2>
-                    <p className="next-booking-time">
-                      Alege o facilitate de mai jos pentru a face o programare.
+                    <p className="next-booking-eyebrow">Următoarea rezervare</p>
+                    <h2 className="next-booking-title">{nextBooking.numeFacilitate}</h2>
+                    <div className="next-booking-meta">
+                      <span>
+                        {formatBookingDate(nextBooking.data)} • {nextBooking.intervalOrar}
+                      </span>
+                      <span className="next-booking-location">
+                        <PinIcon />
+                        <span>{nextBooking.locatie}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="next-booking-left">
+                  <div>
+                    <p className="next-booking-eyebrow">Următoarea rezervare</p>
+                    <h2 className="next-booking-title">Nicio rezervare activă</h2>
+                    <p className="next-booking-meta">
+                      Selectează o facilitate de mai jos pentru a face o programare.
                     </p>
                   </div>
                 </div>
               )}
+
+              <div className="next-booking-arrow-btn">
+                <ChevronRight color="#ffffff" />
+              </div>
             </section>
 
             {/* Secțiunea Alege-ți mișcarea */}
             <section>
               <div className="facilities-header">
                 <h2 className="facilities-title">Alege-ți mișcarea</h2>
-                <span className="facilities-count">{FACILITIES.length} facilități</span>
+                <span
+                  className="facilities-count"
+                  onClick={() => setActiveTab('rezerva')}
+                >
+                  Vezi toate facilitățile →
+                </span>
               </div>
 
               <div className="facilities-grid">
@@ -202,7 +278,9 @@ function UserHomePage({ currentUser, onLogout }) {
                     >
                       <div>
                         <div className="facility-card-top">
-                          <SportIcon type={fac.nume} color={isOpen ? '#1e3a8a' : '#94a3b8'} />
+                          <div className="facility-icon-circle">
+                            <SportIcon type={fac.nume} color={isOpen ? '#1e3a8a' : '#94a3b8'} />
+                          </div>
                           <span className={`status-dot ${isOpen ? 'green' : 'orange'}`} />
                         </div>
 
@@ -214,8 +292,8 @@ function UserHomePage({ currentUser, onLogout }) {
 
                       {isOpen ? (
                         <div className="facility-action">
-                          <span>Rezervă acum</span>
-                          <ArrowUpRight color="#1e3a8a" />
+                          <span>Rezervă</span>
+                          <ArrowRight color="#1e3a8a" />
                         </div>
                       ) : (
                         <div className="facility-action disabled">
@@ -230,112 +308,45 @@ function UserHomePage({ currentUser, onLogout }) {
           </>
         )}
 
-       {/* Tab Rezervă (componentă separată din folderul UserBookingPage) */}
-     {activeTab === 'rezerva' && (
-       <UserBookingPage
-         currentUser={currentUser}
-         initialFacility={selectedFacility}
-         onBack={() => {
-           setSelectedFacility(null);
-           setActiveTab('acasa');
-         }}
-         onBookingSuccess={async () => {
-           try {
-             const res = await axios.get('http://localhost:5000/api/bookings');
-             const userActiveBookings = res.data.filter(
-               (b) => b.userId === currentUser.userId && b.status === 'Activa'
-             );
-             if (userActiveBookings.length > 0) {
-               setNextBooking(userActiveBookings[userActiveBookings.length - 1]);
-             }
-           } catch (err) {
-             console.error(err);
-           }
-           setSelectedFacility(null);
-           setActiveTab('acasa');
-         }}
-       />
-     )}
-        {/* Tab Profil (conține datele utilizatorului și butonul de Deconectare) */}
-        {activeTab === 'profil' && (
-          <div style={{ paddingTop: '20px' }}>
-            <h2 style={{ margin: '0 0 4px 0' }}>{currentUser.nume}</h2>
-            <p style={{ color: '#64748b', margin: '0 0 12px 0', fontSize: '14px' }}>
-              {currentUser.email}
-            </p>
-            <span
-              style={{
-                display: 'inline-block',
-                padding: '4px 12px',
-                borderRadius: '16px',
-                backgroundColor: '#dbeafe',
-                color: '#1e3a8a',
-                fontSize: '12px',
-                fontWeight: '700',
-                marginBottom: '24px',
-              }}
-            >
-              Rol: {currentUser.rol}
-            </span>
+        {/* Tab Rezervă (Desktop 2 coloane) */}
+        {activeTab === 'rezerva' && (
+          <UserBookingPage
+            currentUser={currentUser}
+            initialFacility={selectedFacility}
+            onBookingSuccess={async () => {
+              await fetchUserBookings();
+              setSelectedFacility(null);
+              setActiveTab('acasa');
+            }}
+          />
+        )}
 
-            <div>
-              <button
-                onClick={onLogout}
+        {/* Tab Profil */}
+        {activeTab === 'profil' && (
+          <div>
+            <h1 className="home-greeting" style={{ marginBottom: '20px' }}>Profilul meu</h1>
+            <div className="profile-card-desktop">
+              <h2 style={{ margin: '0 0 6px 0', fontSize: '22px' }}>{currentUser.nume}</h2>
+              <p style={{ color: '#64748b', margin: '0 0 16px 0', fontSize: '15px' }}>
+                {currentUser.email}
+              </p>
+              <span
                 style={{
-                  width: '100%',
-                  padding: '14px',
-                  backgroundColor: '#fee2e2',
-                  color: '#b91c1c',
-                  border: 'none',
-                  borderRadius: '12px',
+                  display: 'inline-block',
+                  padding: '6px 14px',
+                  borderRadius: '16px',
+                  backgroundColor: '#dbeafe',
+                  color: '#1e3a8a',
+                  fontSize: '13px',
                   fontWeight: '700',
-                  cursor: 'pointer',
                 }}
               >
-                Deconectare
-              </button>
+                Rol: {currentUser.rol}
+              </span>
             </div>
           </div>
         )}
-
-        {/* Bara de navigare de jos */}
-        <nav className="bottom-nav">
-          <button
-            className={`bottom-nav-item ${activeTab === 'acasa' ? 'active' : ''}`}
-            onClick={() => setActiveTab('acasa')}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Acasă</span>
-          </button>
-
-          <button
-            className={`bottom-nav-item ${activeTab === 'rezerva' ? 'active' : ''}`}
-            onClick={() => setActiveTab('rezerva')}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            <span>Rezervă</span>
-          </button>
-
-          <button
-            className={`bottom-nav-item ${activeTab === 'profil' ? 'active' : ''}`}
-            onClick={() => setActiveTab('profil')}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Profil</span>
-          </button>
-        </nav>
-      </div>
+      </main>
     </div>
   );
 }
